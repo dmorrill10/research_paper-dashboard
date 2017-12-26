@@ -1,0 +1,81 @@
+{
+  "name": "research-paper-dashboard",
+  "description": "",
+  "version": "0.0.0",
+  "homepage": "",
+  "main": "src",
+  "keywords": [
+    "feathers"
+  ],
+  "author": {
+    "name": "Dustin Morrill",
+    "email": "dmorrill10@gmail.com"
+  },
+  "contributors": [],
+  "bugs": {},
+  "directories": {
+    "lib": "src",
+    "test": "test/"
+  },
+  "engines": {
+    "node": "^9.0.0",
+    "yarn": ">= 0.18.0"
+  },
+  "devDependencies": {
+    "eslint": "^4.14.0",
+    "mocha": "^4.0.1",
+    "request": "^2.83.0",
+    "request-promise": "^4.2.2"
+  },
+  "scripts": {
+    "test": "npm run test-s && npm run test-f",
+    "test-s": "eslint src/. test/. --config .eslintrc.json && mocha test/ --recursive",
+    "test-f": "eslint frontend/. --config .eslintrc.json && mocha frontend/test/ --recursive",
+    "lint": "eslint src/. test/. frontend/. --config .eslintrc.json",
+    "start": "node src/",
+    "build": "webpack --progress --colors",
+    "watch": "webpack --progress --colors --watch"
+  },
+  "dependencies": {
+    "@babel/core": "^7.0.0-beta.35",
+    "@babel/preset-env": "^7.0.0-beta.35",
+    "@babel/preset-react": "^7.0.0-beta.35",
+    "@feathersjs/configuration": "^1.0.1",
+    "@feathersjs/errors": "^3.2.0",
+    "@feathersjs/express": "^1.1.2",
+    "@feathersjs/feathers": "^3.0.2",
+    "@feathersjs/rest-client": "^1.3.2",
+    "@feathersjs/socketio": "^3.0.1",
+    "@feathersjs/socketio-client": "^1.0.1",
+    "babel-loader": "8.0.0-beta.0",
+    "body-parser": "^1.18.2",
+    "bootstrap-sass": "^3.3.7",
+    "bourbon": "^4.3.4",
+    "compression": "^1.7.1",
+    "cors": "^2.8.4",
+    "css-loader": "^0.28.7",
+    "datejs": "^1.0.0-rc3",
+    "expose-loader": "^0.7.4",
+    "extract-text-webpack-plugin": "^3.0.2",
+    "feathers-memory": "^2.1.0",
+    "feathers-nedb": "^2.7.0",
+    "file-loader": "^1.1.6",
+    "helmet": "^3.9.0",
+    "jquery": "^3.2.1",
+    "jquery-ujs": "^1.2.2",
+    "js-yaml": "^3.10.0",
+    "marked": "^0.3.7",
+    "nedb": "^1.8.0",
+    "node-sass": "^4.7.2",
+    "parse-duration": "^0.1.1",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
+    "react-json-view": "^1.14.0",
+    "sass-loader": "^6.0.6",
+    "serve-favicon": "^2.4.5",
+    "style-loader": "^0.19.1",
+    "url-loader": "^0.6.2",
+    "webpack": "^3.10.0",
+    "winston": "^2.4.0"
+  }
+}
