@@ -61,6 +61,37 @@ class Reference extends React.Component {
   }
 }
 
+class Section extends React.Component {
+  render() {
+    let l = [<p key='section-title' className='section-title'>{this.props.title}</p>];
+    if (this.props.notes !== undefined && this.props.notes !== null) {
+      l.push(
+        <ul key='section-notes' className='section-notes'>
+          {
+            this.props.map((note, i) =>
+              <li key={i} className='section-note'>
+                {note}
+              </li>
+            )
+          }
+        </ul>
+      );
+    }
+    if (this.props.subsections !== undefined && this.props.subsections !== null) {
+      l.push(
+        <ul key='subsections' className='subsections'>
+          {
+            this.props.subsections.map(
+              (section, i) => <Section key={i} title={section.title} notes={section.notes} subsections={section.subsections} />
+            )
+          }
+        </ul>
+      );
+    }
+    return <div className='section'>{l}</div>;
+  }
+}
+
 class PaperDetails extends React.Component {
   render() {
     let l = [
@@ -92,17 +123,26 @@ class PaperDetails extends React.Component {
         Conclusion: {this.props.conclusion}
       </div>
     );
-    // ,
-    // (
-    //   <div key='outline' className='outline'>
-    //     {this.props.outline}
-    //   </div>
-    // ),
-    // (
-    //   <div key='notes' className='notes'>
-    //     {this.props.notes}
-    //   </div>
-    // ),
+    if (this.props.outline !== undefined && this.props.outline !== null) {
+      l.push(
+        <ul key='outline' className='outline'>
+          {
+            this.props.outline.map((section, i) =>
+              <li key={i}>
+                <Section title={section.title} note={section.notes} subsections={section.subsections} />
+              </li>
+            )
+          }
+        </ul>
+      );
+    }
+    if (this.props.notes !== undefined && this.props.notes !== null) {
+      l.push(
+        <ul key='notes' className='notes'>
+          {this.props.notes.map((note, i) => <li key={i}>note</li>)}
+        </ul>
+      );
+    }
     if (this.props.references !== undefined && this.props.references !== null) {
       l.push(
         <ul key='references' className='references'>
