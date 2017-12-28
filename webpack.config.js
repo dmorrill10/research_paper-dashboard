@@ -12,12 +12,18 @@ module.exports = {
     publicPath: '/assets/'
   },
   plugins: [
+    new webpack.ProvidePlugin({
+      $: 'jquery',
+      jQuery: 'jquery',
+      'window.jQuery': 'jquery',
+      Popper: ['popper.js', 'default']
+    }),
     new ExtractTextPlugin("[name].css"),
     new webpack.optimize.OccurrenceOrderPlugin()
   ],
   module: {
     rules: [{
-        test: /\.(jpe?g|png|gif|ttf|eot|svg|woff)(\??v?=?[0-9]?\.?[0-9]?\.?[0-9]?)?$/,
+        test: /\.(jpe?g|png|gif|ttf|eot|svg|woff|otf)(\??v?=?[0-9]?\.?[0-9]?\.?[0-9]?)?$/,
         loaders: ["url-loader"]
       },
       {

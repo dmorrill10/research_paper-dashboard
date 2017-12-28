@@ -1,8 +1,8 @@
 require('jquery');
 require('jquery-ujs');
 require('./style/index.sass');
-require('bootstrap-sass/assets/javascripts/bootstrap.min.js');
 
+import 'bootstrap'
 import io from 'socket.io-client';
 import feathers from '@feathersjs/feathers';
 import socketio from '@feathersjs/socketio-client';
@@ -12,6 +12,16 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import Communicator from './src/communicator';
 
+
+function keyIsPresent(o, k) {
+  return k in o && o[k] !== undefined && o[k] !== null;
+}
+
+class MyReactComponent extends React.Component {
+  propIsPresent(k) {
+    return keyIsPresent(this.props, k);
+  }
+}
 
 function afterRender(selector, f) {
   const elem = $(selector);
@@ -43,7 +53,7 @@ let communicator = new Communicator(app);
 
 import ReactJson from 'react-json-view'
 
-class Reference extends React.Component {
+class Reference extends MyReactComponent {
   render() {
     const l = [
       (
@@ -61,10 +71,10 @@ class Reference extends React.Component {
   }
 }
 
-class Section extends React.Component {
+class Section extends MyReactComponent {
   render() {
     let l = [<p key='section-title' className='section-title'>{this.props.title}</p>];
-    if (this.props.notes !== undefined && this.props.notes !== null) {
+    if (this.propIsPresent('notes')) {
       l.push(
         <ul key='section-notes' className='section-notes'>
           {
@@ -77,7 +87,7 @@ class Section extends React.Component {
         </ul>
       );
     }
-    if (this.props.subsections !== undefined && this.props.subsections !== null) {
+    if (this.propIsPresent('subsections')) {
       l.push(
         <ul key='subsections' className='subsections'>
           {
@@ -92,124 +102,188 @@ class Section extends React.Component {
   }
 }
 
-class PaperDetails extends React.Component {
+class CardComponent extends MyReactComponent {
   render() {
-    let l = [
-      (
-        <ul key='authors' className='authors'>
-          {this.props.authors.map((author, i) => <li key={i}>{author}</li>)}
-        </ul>
-      )
-    ];
-    if (this.props.url !== undefined && this.props.url !== null) {
+    return (
+      <div className={`${this.name()} card`}>
+        {[
+          (
+            <div key={`${this.name()}-header`} className={`${this.name()}-header card-header`} role='tab' id={`${this.name()}-${this.props.id}`}>
+              <h5 className="mb-0">
+                <a data-toggle="collapse" href={`#${this.name()}-${this.props.id}-details`} aria-expanded="false" aria-controls={`${this.name()}-${this.props.id}-details`}>
+                  {this.title()}
+                </a>
+              </h5>
+            </div>
+          ),
+          (
+            <div
+              key={`${this.name()}-${this.props.id}-details`}
+              className="collapse multi-collapse"
+              id={`${this.name()}-${this.props.id}-details`}
+              role="tabpanel"
+              aria-labelledby={`${this.name()}-${this.props.id}`}
+              data-parent={`${this.name()}-${this.props.id}`}>
+              <div className="card-body">
+                {this.details()}
+              </div>
+            </div>
+          )
+        ]}
+      </div>
+    );
+  }
+}
+
+class Authors extends CardComponent {
+  name() { return 'authors'; }
+  title() { return 'Authors'; }
+  details() {
+    return (
+      <ul key='authors' className='authors'>
+        {this.props.names.map((name, i) => <li key={i}>{name}</li>)}
+      </ul>
+    );
+  }
+}
+
+class Outline extends CardComponent {
+  name() { return 'outline'; }
+  title() { return 'Outline'; }
+  details() {
+    return (
+      <ul>
+        {
+          this.props.sections.map((section, i) =>
+            <li key={i}>
+              <Section title={section.title} note={section.notes} subsections={section.subsections} />
+            </li>
+          )
+        }
+      </ul>
+    );
+  }
+}
+
+class FirstReadSummary extends CardComponent {
+  name() { return 'first-read-summary'; }
+  title() { return 'First Read Summary'; }
+  details() {
+    let l = [];
+    if (this.propIsPresent('abstract')) {
       l.push(
-        <a key='url' className='url' href={this.props.url}>
-          Link to Paper
+        <div key='abstract' className='abstract'>
+          Abstract: {this.props.abstract}
+        </div>
+      );
+    }
+    if (this.propIsPresent('introduction')) {
+      l.push(
+        <div key='introduction' className='introduction'>
+          Introduction: {this.props.introduction}
+        </div>
+      );
+    }
+    if (this.propIsPresent('conclusion')) {
+      l.push(
+        <div key='conclusion' className='conclusion'>
+          Conclusion: {this.props.conclusion}
+        </div>
+      );
+    }
+    return l;
+  }
+}
+
+class Notes extends CardComponent {
+  name() { return 'notes'; }
+  title() { return 'Notes'; }
+  details() {
+    return (
+      <ul key='notes' className='notes'>
+        {this.props.notes.map((note, i) => <li key={i}>note</li>)}
+      </ul>
+    );
+  }
+}
+
+class References extends CardComponent {
+  name() { return 'references'; }
+  title() { return 'References'; }
+  details() {
+    return (
+      <ul key='references' className='references'>
+        {
+          this.props.references.map(
+            (reference, i) => {
+              let l2 = [];
+              if ('link' in reference) {
+                l2.push(
+                  <a key='citation' className='citation' href={`#paper-${reference.link}`}>
+                    {reference.citation}
+                  </a>
+                );
+              } else {
+                l2.push(
+                  <p key='citation' className='citation'>
+                    {reference.citation}
+                  </p>
+                );
+              }
+              l2.push(
+                <Reference key={`reference-${i}`} title={reference.title} notes={reference.notes} />
+              );
+              return <li key={i}>{l2}</li>;
+            }
+          )
+        }
+      </ul>
+    );
+  }
+}
+
+class PaperDetails extends MyReactComponent {
+  render() {
+    let l = [];
+    if (this.propIsPresent('url')) {
+      l.push(
+        <a key='url' className='btn btn-primary url' href={this.props.url}>
+          <span className="oi oi-data-transfer-download"></span>
         </a>
       );
     }
-    l.push(
-      <div key='abstract' className='abstract'>
-        Abstract: {this.props.abstract}
-      </div>
-    );
-    l.push(
-      <div key='introduction' className='introduction'>
-        Introduction: {this.props.introduction}
-      </div>
-    );
-    l.push(
-      <div key='conclusion' className='conclusion'>
-        Conclusion: {this.props.conclusion}
-      </div>
-    );
-    if (this.props.outline !== undefined && this.props.outline !== null) {
-      l.push(
-        <ul key='outline' className='outline'>
-          {
-            this.props.outline.map((section, i) =>
-              <li key={i}>
-                <Section title={section.title} note={section.notes} subsections={section.subsections} />
-              </li>
-            )
-          }
-        </ul>
-      );
+    if (this.propIsPresent('authors')) {
+      l.push(<Authors key='authors' names={this.props.authors} />);
     }
-    if (this.props.notes !== undefined && this.props.notes !== null) {
-      l.push(
-        <ul key='notes' className='notes'>
-          {this.props.notes.map((note, i) => <li key={i}>note</li>)}
-        </ul>
-      );
+    l.push(<FirstReadSummary key='first-read-summary' abstract={this.props.abstract} introduction={this.props.introduction} conclusion={this.props.conclusion} />);
+    if (this.propIsPresent('outline')) {
+      l.push(<Outline key='outline' id={this.props.id} sections={this.props.outline} />);
     }
-    if (this.props.references !== undefined && this.props.references !== null) {
-      l.push(
-        <ul key='references' className='references'>
-          {
-            this.props.references.map(
-              (reference, i) => {
-                let l2 = [];
-                if ('link' in reference) {
-                  l2.push(
-                    <a key='citation' className='citation' href={`#paper-${reference.link}`}>
-                      {reference.citation}
-                    </a>
-                  );
-                } else {
-                  l2.push(
-                    <p key='citation' className='citation'>
-                      {reference.citation}
-                    </p>
-                  );
-                }
-                l2.push(
-                  <Reference key={`reference-${i}`} title={reference.title} notes={reference.notes} />
-                );
-                return <li key={i}>{l2}</li>;
-              }
-            )
-          }
-        </ul>
-      );
+    if (this.propIsPresent('notes')) {
+      l.push(<Notes key='notes' notes={this.props.notes} />);
+    }
+    if (this.propIsPresent('references')) {
+      l.push(<References key='references' references={this.props.references} />);
     }
     return <div key='paper-details' className='paper-details'>{l}</div>;
   }
 }
 
-class Paper extends React.Component {
-  render() {
-    const l = [
-      (
-        <button
-          key='button'
-          id={`paper-${this.props.id}`}
-          className="btn"
-          type="button"
-          data-toggle="collapse"
-          data-target={`#${this.props.id}`}
-          aria-expanded="false"
-          aria-controls={this.props.id}>
-          {this.props.title}
-        </button>
-      ),
-      (
-        <div key='row' className='row'>
-          <div className="collapse multi-collapse" id={this.props.id}>
-            <PaperDetails
-              authors={this.props.authors}
-              url={this.props.url}
-              abstract={this.props.abstract}
-              introduction={this.props.introduction}
-              conclusion={this.props.conclusion}
-              outline={this.props.outline}
-              notes={this.props.notes}
-              references={this.props.references} />
-          </div>
-        </div>
-      )
-    ];
-    return <div key={`paper-${this.props.id}`}>{l}</div>;
+class Paper extends CardComponent {
+  name() { return 'paper'; }
+  title() { return this.props.title; }
+  details() {
+    return (
+      <PaperDetails
+        authors={this.props.authors}
+        url={this.props.url}
+        abstract={this.props.abstract}
+        introduction={this.props.introduction}
+        conclusion={this.props.conclusion}
+        outline={this.props.outline}
+        notes={this.props.notes}
+        references={this.props.references} />
+    );
   }
 }
 
@@ -217,7 +291,7 @@ function main() {
   communicator.findPapers().then(function (data) {
     return ReactDOM.render(
       (
-        <ul>{
+        <div className='papers' id="accordion" role="tablist">{
             data.map(
               (paper, id) => {
                 return (
@@ -236,7 +310,7 @@ function main() {
                 );
               }
             )
-          }</ul>
+          }</div>
       ),
       document.getElementById('app')
     );
