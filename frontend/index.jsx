@@ -97,14 +97,15 @@ class Section extends MyReactComponent {
 }
 
 class CardComponent extends MyReactComponent {
+  id() { return this.props.id; }
   render() {
     return (
       <div className={`${this.name()} card`}>
         {[
           (
-            <div key={`${this.name()}-header`} className={`${this.name()}-header card-header`} role='tab' id={`${this.name()}-${this.props.id}`}>
+            <div key={`${this.name()}-header`} className={`${this.name()}-header card-header`} role='tab' id={`${this.name()}-${this.id()}`}>
               <h5 className="mb-0">
-                <a data-toggle="collapse" href={`#${this.name()}-${this.props.id}-details`} aria-expanded="false" aria-controls={`${this.name()}-${this.props.id}-details`}>
+                <a data-toggle="collapse" href={`#${this.name()}-${this.id()}-details`} aria-expanded="false" aria-controls={`${this.name()}-${this.id()}-details`}>
                   {this.title()}
                 </a>
               </h5>
@@ -112,12 +113,12 @@ class CardComponent extends MyReactComponent {
           ),
           (
             <div
-              key={`${this.name()}-${this.props.id}-details`}
+              key={`${this.name()}-${this.id()}-details`}
               className="collapse multi-collapse"
-              id={`${this.name()}-${this.props.id}-details`}
+              id={`${this.name()}-${this.id()}-details`}
               role="tabpanel"
-              aria-labelledby={`${this.name()}-${this.props.id}`}
-              data-parent={`${this.name()}-${this.props.id}`}>
+              aria-labelledby={`${this.name()}-${this.id()}`}
+              data-parent={`${this.name()}-${this.id()}`}>
               <div className="card-body">
                 {this.details()}
               </div>
@@ -254,17 +255,17 @@ class PaperDetails extends MyReactComponent {
       );
     }
     if (this.propIsPresent('authors')) {
-      l.push(<Authors key='authors' names={this.props.authors} />);
+      l.push(<Authors key='authors' id={this.props.id} names={this.props.authors} />);
     }
-    l.push(<FirstReadSummary key='first-read-summary' abstract={this.props.abstract} introduction={this.props.introduction} conclusion={this.props.conclusion} />);
+    l.push(<FirstReadSummary key='first-read-summary' id={this.props.id} abstract={this.props.abstract} introduction={this.props.introduction} conclusion={this.props.conclusion} />);
     if (this.propIsPresent('outline')) {
       l.push(<Outline key='outline' id={this.props.id} sections={this.props.outline} />);
     }
     if (this.propIsPresent('notes')) {
-      l.push(<Notes key='notes' notes={this.props.notes} />);
+      l.push(<Notes key='notes' id={this.props.id} notes={this.props.notes} />);
     }
     if (this.propIsPresent('references')) {
-      l.push(<References key='references' references={this.props.references} />);
+      l.push(<References key='references' id={this.props.id} references={this.props.references} />);
     }
     return <div key='paper-details' className='paper-details'>{l}</div>;
   }
@@ -276,6 +277,7 @@ class Paper extends CardComponent {
   details() {
     return (
       <PaperDetails
+        id={this.props.id}
         authors={this.props.authors}
         url={this.props.url}
         abstract={this.props.abstract}
