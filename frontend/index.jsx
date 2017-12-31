@@ -86,7 +86,11 @@ class Section extends MyReactComponent {
         <ul key='subsections' className='subsections'>
           {
             this.props.subsections.map(
-              (section, i) => <Section key={i} title={section.title} notes={section.notes} subsections={section.subsections} />
+              (section, i) => (
+                <li key={i} className='subsection'>
+                  <Section key={i} title={section.title} notes={section.notes} subsections={section.subsections} />
+                </li>
+              )
             )
           }
         </ul>
@@ -151,7 +155,7 @@ class Outline extends CardComponent {
         {
           this.props.sections.map((section, i) =>
             <li key={i}>
-              <Section title={section.title} note={section.notes} subsections={section.subsections} />
+              <Section title={section.title} notes={section.notes} subsections={section.subsections} />
             </li>
           )
         }
