@@ -63,7 +63,7 @@ class Reference extends MyReactComponent {
       ),
       (
         <ul key='reference-notes' className='reference-notes'>
-          {this.props.notes.map((note, i) => <li key={i}>{note}</li>)}
+          {renderListOfMarkdownNotes(this.props.notes)}
         </ul>
       )
     ];
@@ -77,13 +77,7 @@ class Section extends MyReactComponent {
     if (this.propIsPresent('notes')) {
       l.push(
         <ul key='section-notes' className='section-notes'>
-          {
-            this.props.map((note, i) =>
-              <li key={i} className='section-note'>
-                {note}
-              </li>
-            )
-          }
+          {renderListOfMarkdownNotes(this.props.notes)}
         </ul>
       );
     }
@@ -195,13 +189,20 @@ class FirstReadSummary extends CardComponent {
   }
 }
 
+function renderListOfMarkdownNotes(notes) {
+  return notes.map((note, i) => {
+    const md = marked.parse(note, {sanitize: true});
+    return <li key={i} dangerouslySetInnerHTML={{__html:md}} />;
+  });
+}
+
 class Notes extends CardComponent {
   name() { return 'notes'; }
   title() { return 'Notes'; }
   details() {
     return (
       <ul key='notes' className='notes'>
-        {this.props.notes.map((note, i) => <li key={i}>note</li>)}
+        {renderListOfMarkdownNotes(this.props.notes)}
       </ul>
     );
   }
