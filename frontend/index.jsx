@@ -172,21 +172,24 @@ class FirstReadSummary extends CardComponent {
     if (this.propIsPresent('abstract')) {
       l.push(
         <div key='abstract' className='abstract'>
-          Abstract: {this.props.abstract}
+          <div className='title'>Abstract</div>
+          <div className='summary'>{this.props.abstract}</div>
         </div>
       );
     }
     if (this.propIsPresent('introduction')) {
       l.push(
         <div key='introduction' className='introduction'>
-          Introduction: {this.props.introduction}
+          <div className='title'>Introduction</div>
+          <div className='summary'>{this.props.introduction}</div>
         </div>
       );
     }
     if (this.propIsPresent('conclusion')) {
       l.push(
         <div key='conclusion' className='conclusion'>
-          Conclusion: {this.props.conclusion}
+          <div className='title'>Conclusion</div>
+          <div className='summary'>{this.props.conclusion}</div>
         </div>
       );
     }
